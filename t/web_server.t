@@ -8,6 +8,13 @@ use File::Temp ();
 use Perlbal::Test ();
 use IO::Socket;
 
+## make sure commands are available
+for my $cmd (qw( start_server perlbal )) {
+    chomp(my $bin = `which $cmd`);
+    plan skip_all => "$cmd not found in PATH"
+        unless $bin && -x $bin;
+}
+
 my $mgmt_port = '127.0.0.1:' . Perlbal::Test::new_port();
 
 test_tcp(
@@ -29,7 +36,8 @@ CREATE SERVICE mgmt
   LISTEN = $mgmt_port
 ENABLE mgmt
 CONF
-        exec 'start_server', '--port', $port, '--port', $mgmt_port, '--', 'perlbal', '-c', $conf_fh->filename;
+        exec 'start_server', '--port', $port, '--port', $mgmt_port, '--interval', '3',
+             '--', 'perlbal', '-c', $conf_fh->filename;
     },
     client => sub {
         my ($port, $pid) = @_;
@@ -56,7 +64,7 @@ CONF
 
         ## restart with sending HUP to start_server
         kill 'HUP', $pid;
-        sleep 2;
+        sleep 5;
 
         ## simple GET again
         $res = $ua->get("http://localhost:$port/");
