@@ -25,5 +25,5 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/ziguzagu/Perlbal-Plugin-ServerStarter.git
-version: 0.03
+version: 0.04
 x_authority: ZIGUZAGU
